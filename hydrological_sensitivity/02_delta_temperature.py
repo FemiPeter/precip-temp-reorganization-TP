@@ -1,0 +1,55 @@
+"""
+02_delta_temperature.py
+=======================
+Computes the change in surface temperature (ΔT) for each CMIP6 model
+by subtracting the piControl time series from the 1pctCO2 time series:
+
+    ΔT = T(1pctCO2) − T(piControl)
+
+Input files must be matched by filename across the two experiment folders.
+Output preserves the subfolder structure of the input.
+
+Paper
+-----
+Hydrological Sensitivity and the Reorganization of Precipitation
+with Temperature over the Tibetan Plateau
+Olowe & Cuo
+"""
+
+# ── USER CONFIGURATION ───────────────────────────────────────────────────────
+FOLDER_1PCTCO2   = "data/cmip6/moving_avg/tas/1pctco2"    # 1pctCO2 temperature
+FOLDER_PICONTROL = "data/cmip6/moving_avg/tas/picontrol"  # piControl temperature
+OUTPUT_FOLDER    = "data/cmip6/moving_avg/tas/delta_tas"  # ΔT output
+# ─────────────────────────────────────────────────────────────────────────────
+
+import os
+import pandas as pd
+
+
+def process_files(folder1, folder2, output_folder):
+    for root, _, files in os.walk(folder1):
+        for file in files:
+            if not file.endswith(".csv"):
+                continue
+
+            file1_path    = os.path.join(root, file)
+            relative_path = os.path.relpath(file1_path, folder1)
+            file2_path    = os.path.join(folder2, relative_path)
+            output_path   = os.path.join(output_folder, relative_path)
+
+            if not os.path.exists(file2_path):
+                print(f"  [SKIP] No matching piControl file for: {relative_path}")
+                continue
+
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
+
+            series1 = pd.read_csv(file1_path,  header=None).squeeze()
+            series2 = pd.read_csv(file2_path,  header=None).squeeze()
+            delta   = series1 - series2
+            delta.to_csv(output_path, index=False, header=False)
+
+            print(f"  ΔT saved: {relative_path}")
+
+
+process_files(FOLDER_1PCTCO2, FOLDER_PICONTROL, OUTPUT_FOLDER)
+print("Temperature change calculation complete.")

@@ -11,3 +11,11 @@ binning/ — Percentile-based binning pipeline for analysing precipitation reorg
 05_add_boolean_flag.py — Flags the temperature bin with the highest precipitation frequency per file (column H).
 06_split_temp_percentiles.py — Reorganises files by temperature percentile (20th_T through 100th_T) within each precipitation percentile folder.
 07_final_summary.py — Aggregates results into three summary CSVs: percentage of H=True, row counts, and average percentages across all bins.
+
+
+## Citation
+
+If you use this code in your research, please cite:
+
+Jesufemi Olowe. (2026). FemiPeter/precip-temp-reorganization-TP: v1.0.0 — 
+Initial release (v1.0.0). Zenodo. https://doi.org/10.5281/zenodo.20269001
